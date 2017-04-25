@@ -1,1 +1,1 @@
-# webpack+babel+eslint+
+# webpack+babel+eslint+react+redux
