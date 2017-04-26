@@ -1,5 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+
 
 import { increment, decrement } from '../actions';
 
@@ -12,6 +14,4 @@ const Controls = (props) => {
   );
 };
 
-
-// react-redux glue -- outputs Container that knows how to call actions
-export default connect(null, { increment, decrement })(Controls);
+export default withRouter(connect(null, { increment, decrement })(Controls));
