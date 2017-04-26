@@ -1,50 +1,56 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Route, NavLink, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware, compose } from 'redux';
+import createHistory from 'history/createBrowserHistory';
+
+import { ConnectedRouter, routerReducer, routerMiddleware, push } from 'react-router-redux';
+
+import reducers from './reducers';
+
 import './style.scss';
 
-const About = (props) => {
-  return <div>All there is to know about me </div>;
-};
+import About from './components/about';
+import Nav from './components/nav';
+import FallBack from './components/fallback';
+import Test from './components/test';
+import Welcome from './components/welcome';
 
-const Welcome = (props) => {
-  return <div>Welcome</div>;
-};
+// Create a history of your choosing (we're using a browser history in this case)
+const history = createHistory();
 
-const Nav = (props) => {
-  return (
-    <nav>
-      <ul>
-        <li><NavLink to="/">Home</NavLink></li>
-        <li><NavLink to="/about">About</NavLink></li>
-        <li><NavLink to="/test/id1">test id1</NavLink></li>
-        <li><NavLink to="/test/id2">test id2</NavLink></li>
-      </ul>
-    </nav>
-  );
-};
+// Build the middleware for intercepting and dispatching navigation actions
+const middleware = routerMiddleware(history);
+// this creates the store with the reducers, and does some other stuff to initialize devtools
+// const store = createStore(reducers, {}, compose(
+//   applyMiddleware(middleware),
+//   window.devToolsExtension ? window.devToolsExtension() : f => f,
+// ));
 
-const Test = (props) => {
-  return <div> ID: {props.match.params.id} </div>;
-};
+const store = createStore(
+  reducers, {},
+  applyMiddleware(middleware),
+  window.devToolsExtension ? window.devToolsExtension() : f => f,
+);
 
-const FallBack = (props) => {
-  return <div>URL Not Found</div>;
-};
 
 const App = (props) => {
   return (
-    <Router>
-      <div>
-        <Nav />
-        <Switch>
-          <Route exact path="/" component={Welcome} />
-          <Route path="/about" component={About} />
-          <Route exact path="/test/:id" component={Test} />
-          <Route component={FallBack} />
-        </Switch>
-      </div>
-    </Router>
+    <Provider store={store}>
+      <ConnectedRouter history={history}>
+        <div>
+          <Nav />
+          <Switch>
+            <Route exact path="/" component={Welcome} />
+            <Route path="/about" component={About} />
+            <Route exact path="/test/:id" component={Test} />
+            <Route component={FallBack} />
+          </Switch>
+        </div>
+      </ConnectedRouter>
+    </Provider>
   );
 };
 
